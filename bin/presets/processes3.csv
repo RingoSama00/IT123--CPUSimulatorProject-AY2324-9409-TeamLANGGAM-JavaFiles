@@ -1,0 +1,16 @@
+name,arrival_time,burst_time,type
+P1,4,6,system
+P2,7,15,system
+P3,8,12,system
+P4,2,3,system
+P5,9,5,system
+P6,12,17,system
+P7,14,20,system
+P8,15,5,system
+P9,16,3,system
+P10,8,26,system
+P11,20,4,system
+P12,12,7,system
+P13,7,15,system
+P14,11,12,system
+P15,21,14,system

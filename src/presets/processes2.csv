@@ -1,0 +1,11 @@
+name,arrival_time,burst_time,type
+P1,3,6,system
+P2,7,15,interactive
+P3,3,12,batch
+P4,9,16,system
+P5,5,12,system
+P6,10,5,batch
+P7,15,13,interactive
+P8,17,24,interactive
+P9,19,2,system
+P10,20,7,system
