@@ -6,7 +6,7 @@ import java.util.List;
 public class Scheduler {
 
     // data members
-    public final int SYSTEM_QUEUE_RR_QUANTUM = 5;
+    public final int SYSTEM_QUEUE_RR_QUANTUM = 4;
 
     private List<Process> waitingQueue = null;
     private List<Process> systemQueue = new ArrayList<>();
@@ -41,12 +41,17 @@ public class Scheduler {
             Process p = waitingQueue.get(i);
             // removes process from respective type list
             if (p.getArrival() <= clock) {
-                if (p.getType().equals("system"))
+                if (p.getType().equals("system")) {
                     systemQueue.add(waitingQueue.remove(i));
-                if (p.getType().equals("interactive"))
+                }
+                if (p.getType().equals("interactive")) {
                     interactiveQueue.add(waitingQueue.remove(i));
-                if (p.getType().equals("batch"))
+                }
+
+                if (p.getType().equals("batch")) {
                     batchQueue.add(waitingQueue.remove(i));
+                }
+
             }
         }
 
@@ -57,6 +62,7 @@ public class Scheduler {
             if (processor1.getProcess().getType().equals("system")) {
                 if (processor1.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
                     Process p = processor1.getProcess();
+                    // p.setBurst(p.getBurst() - SYSTEM_QUEUE_RR_QUANTUM);
                     // demotes process to lower priority
                     p.demoteType();
                     interactiveQueue.add(p);
@@ -64,6 +70,24 @@ public class Scheduler {
                     // adds to processor
                     processor1.setProcess(shortestProcess); // no need for nullable checks
                     interactiveQueue.remove(shortestProcess);
+                }
+
+            } else if (processor1.getProcess().getType().equals("interactive")) {
+                if (!systemQueue.isEmpty()) {
+                    Process p = processor1.getProcess();
+                    processor1.setProcess(systemQueue.remove(0));
+                    p.demoteType();
+                    batchQueue.add(p);
+                }
+                Process shortestProcess = findShortestProcess(interactiveQueue);
+                if (shortestProcess != null
+                        && processor1.getProcess() != shortestProcess
+                        && processor1.getProcess().getBurst() > shortestProcess.getBurst()) {
+                    Process p = processor1.getProcess();
+                    interactiveQueue.remove(shortestProcess);
+                    processor1.setProcess(shortestProcess);
+                    p.demoteType();
+                    batchQueue.add(p);
                 }
             }
 
@@ -73,38 +97,18 @@ public class Scheduler {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    batchQueue.add(0, p);
+                    batchQueue.add(p);
                 }
                 if (!interactiveQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(interactiveQueue.remove(0));
                     p.demoteType();
-                    batchQueue.add(0, p);
+                    batchQueue.add(p);
                 }
             }
         }
 
         // for processes connected to the second processor
-        if (processor2.getProcess() != null) {
-            if (processor2.getProcess().getType().equals("interactive")) {
-                if (!systemQueue.isEmpty()) {
-                    Process p = processor2.getProcess();
-                    processor2.setProcess(systemQueue.remove(0));
-                    p.demoteType();
-                    batchQueue.add(p);
-                }
-                Process shortestProcess = findShortestProcess(interactiveQueue);
-                if (shortestProcess != null
-                        && processor2.getProcess() != shortestProcess
-                        && processor2.getProcess().getBurst() > shortestProcess.getBurst()) {
-                    Process p = processor2.getProcess();
-                    interactiveQueue.remove(shortestProcess);
-                    processor2.setProcess(shortestProcess);
-                    p.demoteType();
-                    batchQueue.add(p);
-                }
-            }
-        }
 
         // removes processes from each priority type
         if (processor1.getProcess() == null) {

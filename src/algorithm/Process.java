@@ -70,5 +70,4 @@ public class Process implements Comparable<Process> {
         else
             return this.arrival - p.arrival;
     }
-
 }

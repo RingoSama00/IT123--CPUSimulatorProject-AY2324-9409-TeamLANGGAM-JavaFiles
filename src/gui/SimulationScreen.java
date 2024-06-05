@@ -450,7 +450,5 @@ public class SimulationScreen extends JFrame {
                 processTypeText.setText(type);
                 arrivalText.setText(AT);
                 burstText.setText(BT);
-
         }
-
 }
