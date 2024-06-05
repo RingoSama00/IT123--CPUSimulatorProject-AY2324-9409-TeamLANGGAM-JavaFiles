@@ -72,6 +72,7 @@ public class Scheduler {
                     interactiveQueue.remove(shortestProcess);
                 }
 
+                // interactive process (Shortest Time Remaining First)
             } else if (processor1.getProcess().getType().equals("interactive")) {
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
@@ -107,8 +108,6 @@ public class Scheduler {
                 }
             }
         }
-
-        // for processes connected to the second processor
 
         // removes processes from each priority type
         if (processor1.getProcess() == null) {
