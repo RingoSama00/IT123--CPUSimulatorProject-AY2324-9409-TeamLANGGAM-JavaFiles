@@ -367,6 +367,9 @@ public class SimulationScreen extends JFrame {
                         }
                 });
 
+                ImageIcon ant = new ImageIcon("src\\ant logo.png");
+                this.setIconImage(ant.getImage());
+
                 // adding all components to frame
                 this.setSize(1300, 750);
                 this.setTitle("Team Langgam CPU Scheduler");
