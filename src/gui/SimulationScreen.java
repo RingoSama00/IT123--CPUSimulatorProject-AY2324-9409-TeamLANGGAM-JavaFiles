@@ -156,7 +156,6 @@ public class SimulationScreen extends JFrame {
 
                 processNameText = new JTextArea(5, 8);
                 processNameText.setFont(labelFonts);
-                processNameText.setText(rtmSample);
                 processNameText.setEditable(false);
 
                 processNameScroll = new JScrollPane(processNameText);
@@ -174,7 +173,6 @@ public class SimulationScreen extends JFrame {
 
                 arrivalText = new JTextArea(5, 8);
                 arrivalText.setFont(labelFonts);
-                arrivalText.setText(rtmSample);
                 arrivalText.setEditable(false);
 
                 arrivalScroll = new JScrollPane(arrivalText);
@@ -192,7 +190,6 @@ public class SimulationScreen extends JFrame {
 
                 burstText = new JTextArea(5, 8);
                 burstText.setFont(labelFonts);
-                burstText.setText(rtmSample);
                 burstText.setEditable(false);
 
                 burstScroll = new JScrollPane(burstText);
@@ -210,7 +207,6 @@ public class SimulationScreen extends JFrame {
 
                 processTypeText = new JTextArea(5, 8);
                 processTypeText.setFont(labelFonts);
-                processTypeText.setText(rtmSample);
                 processTypeText.setEditable(false);
 
                 processTypeScroll = new JScrollPane(processTypeText);
@@ -228,7 +224,6 @@ public class SimulationScreen extends JFrame {
 
                 processor1Text = new JTextArea(1, 31);
                 processor1Text.setFont(labelFonts);
-                processor1Text.setText(sample);
                 processor1Text.setEditable(false);
 
                 processor1Scroll = new JScrollPane(processor1Text) {
