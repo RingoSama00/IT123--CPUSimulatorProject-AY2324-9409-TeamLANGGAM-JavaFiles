@@ -16,6 +16,7 @@ public class Scheduler {
     private Processor processor2 = new Processor();
     private int clock = 0;
 
+    // constructor
     public Scheduler(List<Process> processes) {
         waitingQueue = processes;
     }
@@ -26,6 +27,7 @@ public class Scheduler {
      * 2nd Interactive Queue: Shortest Remaining Time First
      * 3rd Batch Queue: First Come First Serve
      */
+
     public void tick() {
         processor1.tick();
         if (processor1.getProcess() != null && processor1.getProcess().isFinished()) {
@@ -39,6 +41,7 @@ public class Scheduler {
         // sets the processes in the waiting queue
         for (int i = 0; i < waitingQueue.size(); i++) {
             Process p = waitingQueue.get(i);
+
             // removes process from respective type list
             if (p.getArrival() <= clock) {
                 if (p.getType().equals("system")) {
@@ -56,22 +59,28 @@ public class Scheduler {
 
         // processor one algorithms
         if (processor1.getProcess() != null) {
+
+            // system queue (round robin algorithm)
             if (processor1.getProcess().getType().equals("system")) {
                 if (processor1.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
                     Process p = processor1.getProcess();
                     p.demoteType();
                     interactiveQueue.add(p);
                     Process shortestProcess = findShortestProcess(interactiveQueue);
-                    // processor2.setProcess(shortestProcess); // no need for nullable checks
                     systemQueue.remove(shortestProcess);
                 }
+
+                // interactive queue (shortest time remaining first algorithm)
             } else if (processor1.getProcess().getType().equals("interactive")) {
+
+                // demotes any remaining processes from previous queue
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    // batchQueue.add(p);
                 }
+
+                // find the shortest process and compare remaining burst time
                 Process shortestProcess = findShortestProcess(interactiveQueue);
                 if (shortestProcess != null
                         && processor1.getProcess() != shortestProcess
@@ -85,12 +94,14 @@ public class Scheduler {
                     interactiveQueue.remove(shortestProcess);
 
                 }
+
+                // batch queue (first come first serve algorithm)
             } else if (processor1.getProcess().getType().equals("batch")) {
+                // checks both queues for remaining processes and transfers it too batch queue
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    // batchQueue.add(0, p);
                 }
                 if (!interactiveQueue.isEmpty()) {
                     Process p = processor1.getProcess();
@@ -101,6 +112,7 @@ public class Scheduler {
             }
         }
 
+        // checks for remaining processes
         if (processor1.getProcess() == null) {
             if (!systemQueue.isEmpty()) {
                 processor1.setProcess(systemQueue.remove(0));
