@@ -77,7 +77,7 @@ public class InputScreen extends JFrame {
                 arrivalLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
                 arrivalLabel.setText("Arrival Time");
 
-                processTypeList.setModel(new DefaultComboBoxModel<>(new String[] { "System", "Interactive", "Burst" }));
+                processTypeList.setModel(new DefaultComboBoxModel<>(new String[] { "System", "Interactive", "Batch" }));
                 processTypeList.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
                                 processTypeListActionPerformed(evt);
