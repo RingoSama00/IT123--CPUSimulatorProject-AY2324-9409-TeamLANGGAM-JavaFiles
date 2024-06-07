@@ -2,11 +2,12 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Scheduler {
 
     // data members
-    public final int SYSTEM_QUEUE_RR_QUANTUM = 4;
+    public final int SYSTEM_QUEUE_RR_QUANTUM = 5;
 
     private List<Process> waitingQueue = null;
     private List<Process> systemQueue = new ArrayList<>();
@@ -47,7 +48,6 @@ public class Scheduler {
                 if (p.getType().equals("interactive")) {
                     interactiveQueue.add(waitingQueue.remove(i));
                 }
-
                 if (p.getType().equals("batch")) {
                     batchQueue.add(waitingQueue.remove(i));
                 }
@@ -62,33 +62,39 @@ public class Scheduler {
             if (processor1.getProcess().getType().equals("system")) {
                 if (processor1.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
                     Process p = processor1.getProcess();
-                    // p.setBurst(p.getBurst() - SYSTEM_QUEUE_RR_QUANTUM);
                     // demotes process to lower priority
                     p.demoteType();
                     interactiveQueue.add(p);
                     Process shortestProcess = findShortestProcess(interactiveQueue);
                     // adds to processor
-                    processor1.setProcess(shortestProcess); // no need for nullable checks
-                    interactiveQueue.remove(shortestProcess);
+                    // processor1.setProcess(shortestProcess); // no need for nullable checks
+                    systemQueue.remove(shortestProcess);
                 }
 
                 // interactive process (Shortest Time Remaining First)
             } else if (processor1.getProcess().getType().equals("interactive")) {
+
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    batchQueue.add(p);
+                    // batchQueue.add(p);
                 }
+
                 Process shortestProcess = findShortestProcess(interactiveQueue);
                 if (shortestProcess != null
                         && processor1.getProcess() != shortestProcess
-                        && processor1.getProcess().getBurst() > shortestProcess.getBurst()) {
+                        && processor1.getProcess().getArrival() > shortestProcess.getBurst()) {
+
                     Process p = processor1.getProcess();
-                    interactiveQueue.remove(shortestProcess);
-                    processor1.setProcess(shortestProcess);
                     p.demoteType();
                     batchQueue.add(p);
+
+                    // processor1.setProcess(shortestProcess);
+                    interactiveQueue.remove(shortestProcess);
+                    processor1.setProcess(shortestProcess);
+                    processor2.setProcess(shortestProcess);
+
                 }
             }
 
@@ -102,7 +108,7 @@ public class Scheduler {
                 }
                 if (!interactiveQueue.isEmpty()) {
                     Process p = processor1.getProcess();
-                    processor1.setProcess(interactiveQueue.remove(0));
+                    processor2.setProcess(interactiveQueue.remove(0));
                     p.demoteType();
                     batchQueue.add(p);
                 }
