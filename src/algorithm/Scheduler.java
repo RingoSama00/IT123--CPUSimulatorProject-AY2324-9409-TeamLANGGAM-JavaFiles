@@ -2,7 +2,6 @@ package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class Scheduler {
 
@@ -63,78 +62,39 @@ public class Scheduler {
                     p.demoteType();
                     interactiveQueue.add(p);
                     Process shortestProcess = findShortestProcess(interactiveQueue);
-                    processor1.setProcess(shortestProcess); // no need for nullable checks
-                    interactiveQueue.remove(shortestProcess);
+                    // processor2.setProcess(shortestProcess); // no need for nullable checks
+                    systemQueue.remove(shortestProcess);
                 }
             } else if (processor1.getProcess().getType().equals("interactive")) {
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    batchQueue.add(p);
+                    // batchQueue.add(p);
                 }
                 Process shortestProcess = findShortestProcess(interactiveQueue);
                 if (shortestProcess != null
                         && processor1.getProcess() != shortestProcess
-                        && processor1.getProcess().getBurst() > shortestProcess.getBurst()) {
-                    Process p = processor1.getProcess();
-                    interactiveQueue.remove(shortestProcess);
-                    processor1.setProcess(shortestProcess);
+                        && processor1.getProcessRunningTime() < shortestProcess.getArrival()) {
+                    Process p = processor2.getProcess();
                     p.demoteType();
                     batchQueue.add(p);
+
+                    processor1.setProcess(shortestProcess);
+                    processor2.setProcess(shortestProcess);
+                    interactiveQueue.remove(shortestProcess);
+
                 }
             } else if (processor1.getProcess().getType().equals("batch")) {
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    batchQueue.add(0, p);
+                    // batchQueue.add(0, p);
                 }
                 if (!interactiveQueue.isEmpty()) {
                     Process p = processor1.getProcess();
-                    processor1.setProcess(interactiveQueue.remove(0));
-                    p.demoteType();
-                    batchQueue.add(0, p);
-                }
-            }
-        }
-        if (processor2.getProcess() != null) {
-            if (processor2.getProcess().getType().equals("system")) {
-                if (processor2.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
-                    Process p = processor2.getProcess();
-                    p.demoteType();
-                    interactiveQueue.add(p);
-                    Process shortestProcess = findShortestProcess(interactiveQueue);
-                    processor2.setProcess(shortestProcess); // no need for nullable checks
-                    interactiveQueue.remove(shortestProcess);
-                }
-            } else if (processor2.getProcess().getType().equals("interactive")) {
-                if (!systemQueue.isEmpty()) {
-                    Process p = processor2.getProcess();
-                    processor2.setProcess(systemQueue.remove(0));
-                    p.demoteType();
-                    batchQueue.add(p);
-                }
-                Process shortestProcess = findShortestProcess(interactiveQueue);
-                if (shortestProcess != null
-                        && processor2.getProcess() != shortestProcess
-                        && processor2.getProcess().getBurst() > shortestProcess.getBurst()) {
-                    Process p = processor2.getProcess();
-                    interactiveQueue.remove(shortestProcess);
-                    processor2.setProcess(shortestProcess);
-                    p.demoteType();
-                    batchQueue.add(p);
-                }
-            } else if (processor2.getProcess().getType().equals("batch")) {
-                if (!systemQueue.isEmpty()) {
-                    Process p = processor2.getProcess();
-                    processor2.setProcess(systemQueue.remove(0));
-                    p.demoteType();
-                    batchQueue.add(0, p);
-                }
-                if (!interactiveQueue.isEmpty()) {
-                    Process p = processor2.getProcess();
-                    processor2.setProcess(interactiveQueue.remove(0));
+                    processor2.setProcess(p);
                     p.demoteType();
                     batchQueue.add(0, p);
                 }
@@ -144,47 +104,17 @@ public class Scheduler {
         if (processor1.getProcess() == null) {
             if (!systemQueue.isEmpty()) {
                 processor1.setProcess(systemQueue.remove(0));
-            } else if (!interactiveQueue.isEmpty()) {
-                processor1.setProcess(interactiveQueue.remove(0));
             } else if (!batchQueue.isEmpty()) {
                 processor1.setProcess(batchQueue.remove(0));
             }
         }
         if (processor2.getProcess() == null) {
-            if (!systemQueue.isEmpty()) {
-                processor2.setProcess(systemQueue.remove(0));
-            } else if (!interactiveQueue.isEmpty()) {
+            if (!interactiveQueue.isEmpty()) {
                 processor2.setProcess(interactiveQueue.remove(0));
-            } else if (!batchQueue.isEmpty()) {
-                processor2.setProcess(batchQueue.remove(0));
             }
         }
 
         clock++;
-    }
-
-    // overloading tickAll method
-    public static void tickAll(Scheduler scheduler) {
-        Scheduler.tickAll(scheduler, false);
-    }
-
-    public static void tickAll(Scheduler scheduler, boolean verbose) {
-        while (!scheduler.getWaitingQueue().isEmpty()
-                || !scheduler.getSystemQueue().isEmpty()
-                || !scheduler.getInteractiveQueue().isEmpty()
-                || !scheduler.getBatchQueue().isEmpty()
-                || scheduler.getActiveProcess(1) != null
-                || scheduler.getActiveProcess(2) != null) {
-            scheduler.tick();
-            if (verbose) {
-                consoleOutputScheduler(scheduler);
-            }
-        }
-    }
-
-    // console output for the scheduler
-    public static void consoleOutputScheduler(Scheduler scheduler) {
-        System.err.println("Process Success");
     }
 
     // compares processes and gets the shortest burst time
