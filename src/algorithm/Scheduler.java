@@ -57,75 +57,106 @@ public class Scheduler {
 
         // processor one algorithms
         if (processor1.getProcess() != null) {
-
-            // system process (Round Robin algorithm)
             if (processor1.getProcess().getType().equals("system")) {
                 if (processor1.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
                     Process p = processor1.getProcess();
-                    // demotes process to lower priority
                     p.demoteType();
                     interactiveQueue.add(p);
                     Process shortestProcess = findShortestProcess(interactiveQueue);
-                    // adds to processor
-                    // processor1.setProcess(shortestProcess); // no need for nullable checks
-                    systemQueue.remove(shortestProcess);
+                    processor1.setProcess(shortestProcess); // no need for nullable checks
+                    interactiveQueue.remove(shortestProcess);
                 }
-
-                // interactive process (Shortest Time Remaining First)
             } else if (processor1.getProcess().getType().equals("interactive")) {
-
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    // batchQueue.add(p);
+                    batchQueue.add(p);
                 }
-
                 Process shortestProcess = findShortestProcess(interactiveQueue);
                 if (shortestProcess != null
                         && processor1.getProcess() != shortestProcess
-                        && processor1.getProcess().getArrival() > shortestProcess.getBurst()) {
-
+                        && processor1.getProcess().getBurst() > shortestProcess.getBurst()) {
                     Process p = processor1.getProcess();
-                    p.demoteType();
-                    batchQueue.add(p);
-
-                    // processor1.setProcess(shortestProcess);
                     interactiveQueue.remove(shortestProcess);
                     processor1.setProcess(shortestProcess);
-                    processor2.setProcess(shortestProcess);
-
+                    p.demoteType();
+                    batchQueue.add(p);
                 }
-            }
-
-            // batch process (First Come First Serve algorithm)
-            else if (processor1.getProcess().getType().equals("batch")) {
+            } else if (processor1.getProcess().getType().equals("batch")) {
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
                     p.demoteType();
-                    batchQueue.add(p);
+                    batchQueue.add(0, p);
                 }
                 if (!interactiveQueue.isEmpty()) {
                     Process p = processor1.getProcess();
-                    processor2.setProcess(interactiveQueue.remove(0));
+                    processor1.setProcess(interactiveQueue.remove(0));
+                    p.demoteType();
+                    batchQueue.add(0, p);
+                }
+            }
+        }
+        if (processor2.getProcess() != null) {
+            if (processor2.getProcess().getType().equals("system")) {
+                if (processor2.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
+                    Process p = processor2.getProcess();
+                    p.demoteType();
+                    interactiveQueue.add(p);
+                    Process shortestProcess = findShortestProcess(interactiveQueue);
+                    processor2.setProcess(shortestProcess); // no need for nullable checks
+                    interactiveQueue.remove(shortestProcess);
+                }
+            } else if (processor2.getProcess().getType().equals("interactive")) {
+                if (!systemQueue.isEmpty()) {
+                    Process p = processor2.getProcess();
+                    processor2.setProcess(systemQueue.remove(0));
                     p.demoteType();
                     batchQueue.add(p);
+                }
+                Process shortestProcess = findShortestProcess(interactiveQueue);
+                if (shortestProcess != null
+                        && processor2.getProcess() != shortestProcess
+                        && processor2.getProcess().getBurst() > shortestProcess.getBurst()) {
+                    Process p = processor2.getProcess();
+                    interactiveQueue.remove(shortestProcess);
+                    processor2.setProcess(shortestProcess);
+                    p.demoteType();
+                    batchQueue.add(p);
+                }
+            } else if (processor2.getProcess().getType().equals("batch")) {
+                if (!systemQueue.isEmpty()) {
+                    Process p = processor2.getProcess();
+                    processor2.setProcess(systemQueue.remove(0));
+                    p.demoteType();
+                    batchQueue.add(0, p);
+                }
+                if (!interactiveQueue.isEmpty()) {
+                    Process p = processor2.getProcess();
+                    processor2.setProcess(interactiveQueue.remove(0));
+                    p.demoteType();
+                    batchQueue.add(0, p);
                 }
             }
         }
 
-        // removes processes from each priority type
         if (processor1.getProcess() == null) {
             if (!systemQueue.isEmpty()) {
                 processor1.setProcess(systemQueue.remove(0));
+            } else if (!interactiveQueue.isEmpty()) {
+                processor1.setProcess(interactiveQueue.remove(0));
             } else if (!batchQueue.isEmpty()) {
                 processor1.setProcess(batchQueue.remove(0));
             }
         }
         if (processor2.getProcess() == null) {
-            if (!interactiveQueue.isEmpty()) {
+            if (!systemQueue.isEmpty()) {
+                processor2.setProcess(systemQueue.remove(0));
+            } else if (!interactiveQueue.isEmpty()) {
                 processor2.setProcess(interactiveQueue.remove(0));
+            } else if (!batchQueue.isEmpty()) {
+                processor2.setProcess(batchQueue.remove(0));
             }
         }
 
