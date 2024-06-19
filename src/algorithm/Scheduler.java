@@ -59,22 +59,34 @@ public class Scheduler {
 
         // processor one algorithms
         if (processor1.getProcess() != null) {
+
+            // system queue will only execute when process running time is greater
+            // than time quantum
             if (processor1.getProcess().getType().equals("system")) {
                 if (processor1.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
                     Process p = processor1.getProcess();
-                    p.demoteType();
-                    interactiveQueue.add(p);
+                    p.demoteType(); // demote the current process
+                    interactiveQueue.add(p); // add to lower queue
+
+                    // find the shortest burst time to set current process to processor
                     Process shortestProcess = findShortestProcess(interactiveQueue);
                     processor1.setProcess(shortestProcess); // no need for nullable checks
-                    interactiveQueue.remove(shortestProcess);
+                    interactiveQueue.remove(shortestProcess); // remove from interactive to set in processor
                 }
+
+                // interactive queue executes any interactive type process
             } else if (processor1.getProcess().getType().equals("interactive")) {
                 if (!systemQueue.isEmpty()) {
+
+                    // remove from queue and set to processor
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
-                    p.demoteType();
-                    batchQueue.add(p);
+                    p.demoteType(); // demote queue to batch
+                    batchQueue.add(p); // add to batch queue
                 }
+
+                // removes process from queue when current process burst time is greater than
+                // the shortest process burst time
                 Process shortestProcess = findShortestProcess(interactiveQueue);
                 if (shortestProcess != null
                         && processor1.getProcess() != shortestProcess
@@ -82,10 +94,14 @@ public class Scheduler {
                     Process p = processor1.getProcess();
                     interactiveQueue.remove(shortestProcess);
                     processor1.setProcess(shortestProcess);
-                    p.demoteType();
-                    batchQueue.add(p);
+                    p.demoteType(); // demotes to batch queue
+                    batchQueue.add(p); // adds to batch queue
                 }
+
+                // batch queue executes all remaining processes
             } else if (processor1.getProcess().getType().equals("batch")) {
+
+                // add any remaining processes to batch
                 if (!systemQueue.isEmpty()) {
                     Process p = processor1.getProcess();
                     processor1.setProcess(systemQueue.remove(0));
@@ -100,7 +116,12 @@ public class Scheduler {
                 }
             }
         }
+
+        // second processor will continue processing remaining processes until all
+        // queues are empty and is a copy of the first processor
         if (processor2.getProcess() != null) {
+
+            // system for second processor
             if (processor2.getProcess().getType().equals("system")) {
                 if (processor2.getProcessRunningTime() >= SYSTEM_QUEUE_RR_QUANTUM) {
                     Process p = processor2.getProcess();
@@ -110,6 +131,8 @@ public class Scheduler {
                     processor2.setProcess(shortestProcess); // no need for nullable checks
                     interactiveQueue.remove(shortestProcess);
                 }
+
+                // interactive queue for second processor
             } else if (processor2.getProcess().getType().equals("interactive")) {
                 if (!systemQueue.isEmpty()) {
                     Process p = processor2.getProcess();
@@ -127,6 +150,8 @@ public class Scheduler {
                     p.demoteType();
                     batchQueue.add(p);
                 }
+
+                // batch queue for second processor
             } else if (processor2.getProcess().getType().equals("batch")) {
                 if (!systemQueue.isEmpty()) {
                     Process p = processor2.getProcess();
