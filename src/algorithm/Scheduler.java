@@ -193,6 +193,8 @@ public class Scheduler {
 
         if (processor1.getGanttChart().size() == 1 && processor1.getGanttChart().get(0).equals("IDLE 1"))
                 processor1.getGanttChart().remove(0);
+        if (processor2.getGanttChart().size() == 1 && processor2.getGanttChart().get(0).equals("IDLE 1"))
+            processor2.getGanttChart().remove(0);
         clock++;
     }
 
