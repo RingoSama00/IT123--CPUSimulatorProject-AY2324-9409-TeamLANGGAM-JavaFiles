@@ -37,7 +37,7 @@ public class Processor {
             String processName = "";
             // prints IDLE when no processes
             if (this.currentProcess == null)
-                processName = "IDLE";
+                processName = "0";
             // sets currently running process
             else
                 processName = currentProcess.getName();

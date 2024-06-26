@@ -6,7 +6,7 @@ import java.util.List;
 public class Scheduler {
 
     // data members
-    public final int SYSTEM_QUEUE_RR_QUANTUM = 5;
+    public final int SYSTEM_QUEUE_RR_QUANTUM = 3;
 
     private List<Process> waitingQueue = null;
     private List<Process> systemQueue = new ArrayList<>();
