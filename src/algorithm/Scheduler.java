@@ -40,23 +40,25 @@ public class Scheduler {
         }
 
         // sets the processes in the waiting queue
-        for (int i = 0; i < waitingQueue.size(); i++) {
+        int i = 0;
+        while (i < waitingQueue.size()) {
             Process p = waitingQueue.get(i);
 
             // removes process from respective type list
             if (p.getArrival() <= clock) {
                 if (p.getType().equals("system")) {
                     systemQueue.add(waitingQueue.remove(i));
-                    Collections.sort(systemQueue);
                 }
                 if (p.getType().equals("interactive")) {
                     interactiveQueue.add(waitingQueue.remove(i));
-                    Collections.sort(interactiveQueue);
                 }
                 if (p.getType().equals("batch")) {
                     batchQueue.add(waitingQueue.remove(i));
-                    Collections.sort(batchQueue);
                 }
+                i = 0;
+            }
+            else {
+                i++;
             }
         }
 
@@ -192,7 +194,7 @@ public class Scheduler {
         }
 
         if (processor1.getGanttChart().size() == 1 && processor1.getGanttChart().get(0).equals("IDLE 1"))
-                processor1.getGanttChart().remove(0);
+            processor1.getGanttChart().remove(0);
         if (processor2.getGanttChart().size() == 1 && processor2.getGanttChart().get(0).equals("IDLE 1"))
             processor2.getGanttChart().remove(0);
         clock++;
