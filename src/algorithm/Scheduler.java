@@ -118,8 +118,6 @@ public class Scheduler {
                     batchQueue.add(0, p);
                 }
             }
-            if (processor1.getGanttChart().size() == 1 && processor1.getGanttChart().get(0).equals("IDLE 1"))
-                processor1.getGanttChart().remove(0);
         }
 
         // second processor will continue processing remaining processes until all
@@ -193,6 +191,8 @@ public class Scheduler {
             }
         }
 
+        if (processor1.getGanttChart().size() == 1 && processor1.getGanttChart().get(0).equals("IDLE 1"))
+                processor1.getGanttChart().remove(0);
         clock++;
     }
 
