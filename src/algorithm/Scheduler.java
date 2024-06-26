@@ -1,6 +1,7 @@
 package algorithm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Scheduler {
@@ -46,14 +47,16 @@ public class Scheduler {
             if (p.getArrival() <= clock) {
                 if (p.getType().equals("system")) {
                     systemQueue.add(waitingQueue.remove(i));
+                    Collections.sort(systemQueue);
                 }
                 if (p.getType().equals("interactive")) {
                     interactiveQueue.add(waitingQueue.remove(i));
+                    Collections.sort(interactiveQueue);
                 }
                 if (p.getType().equals("batch")) {
                     batchQueue.add(waitingQueue.remove(i));
+                    Collections.sort(batchQueue);
                 }
-
             }
         }
 
